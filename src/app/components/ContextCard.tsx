@@ -1,20 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { UserContext } from '../types';
+import { UserContext } from '@/app/types';
+import ChatCard from './ChatCard';
 
 type Props = {
-  context: UserContext[];
+  context: UserContext;
 };
 
 export default function ContextCard({ context }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [showFullTranscript, setShowFullTranscript] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
-  if (context.length === 0) return null;
-
-  const latest = context[context.length - 1];
-  const { linkedinProfile, transcription } = latest;
+  const { linkedinProfile, transcription } = context;
 
   return (
     <div className="mt-6">
@@ -25,8 +24,10 @@ export default function ContextCard({ context }: Props) {
         {isOpen ? '-' : '+'}
       </button>
     {isOpen && (<div className="mt-6 p-4 rounded-xl shadow-md space-y-4 border">
-      <h2 className="text-lg font-semibold">🧠 Context Overview</h2>
-
+      <div className='flex justify-between mb-4'>
+        <h2 className="text-lg font-semibold">🧠 Context Overview</h2>
+        <button onClick={() => setChatOpen(!chatOpen)} className='justify-items-end bg-blue-600 rounded px-2'>Ask AI</button>
+      </div>
       {linkedinProfile && (
         <div>
           <p className="font-medium">🔗 LinkedIn Info:</p>

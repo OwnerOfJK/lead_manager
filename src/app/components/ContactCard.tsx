@@ -9,7 +9,8 @@ type Props = {
 };
 
 export default function CollectData({ lead }: Props) {
-  const [context, setContext] = useState<UserContext[]>([]);
+  const [contextMap, setContextMap] = useState<Record<string, UserContext>>({});
+
 
   async function fetchContactData(lead: HubSpotProfile) {
     console.log("Aggregating data for lead:", lead);
@@ -22,7 +23,15 @@ export default function CollectData({ lead }: Props) {
       transcription: transcriptData,
     };
 
-    setContext(prev => [...prev, combinedContext]);
+    if (!lead.contact_id) {
+      console.warn("Missing contact_id in lead:", lead);
+    return;
+  }
+
+  setContextMap(prev => ({
+    ...prev,
+    [lead.contact_id!]: combinedContext,
+  }));
   }
 
   return (
@@ -40,7 +49,8 @@ export default function CollectData({ lead }: Props) {
       >
         Collect Data
       </button>
-      <ContextCard context={context} />
+      {lead.contact_id && contextMap[lead.contact_id] && (
+      <ContextCard context={contextMap[lead.contact_id]} />)}
     </div>
   );
 }
