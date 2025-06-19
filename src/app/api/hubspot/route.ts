@@ -28,8 +28,6 @@ async function fetchNewHubspotContacts(): Promise<HubSpotProfile[]> {
   const data = await res.json();
   console.log("HubSpot API response:", data);
 
-  console.log("Raw contacts:", data.results.map((c: any) => c.properties));
-
   if (!data.results) return [];
 
   const newContacts = data.results
@@ -46,8 +44,6 @@ async function fetchNewHubspotContacts(): Promise<HubSpotProfile[]> {
       contact_id: contact.id || undefined,
       createdate: contact.properties.createdate,
     }));
-
-  console.log("Filtered new contacts:", newContacts);
 
   return newContacts;
 }

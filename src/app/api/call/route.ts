@@ -2,10 +2,11 @@ import fs from "fs";
 import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
 
+//Here we would practically use the Hubspot API to get the call recording
 async function getTranscription(callId: string): Promise<string> {
     if (typeof globalThis.File === "undefined") {
         const { File } = await import("node:buffer");
-        // @ts-expect-error: globalThis is not typed in Node.js
+        // @ts-expect-error: global This is not typed in Node.js
         globalThis.File = File;
     }
 
@@ -24,11 +25,11 @@ async function getTranscription(callId: string): Promise<string> {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  console.log("GET /api/call called");
+  console.log("POST /api/call called");
   const { callId } = await req.json();
 
   if (!callId) {
-    return NextResponse.json({ error: "Invalid Path" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid Call ID" }, { status: 400 });
   }
   try {
     const transcription = await getTranscription(callId);
