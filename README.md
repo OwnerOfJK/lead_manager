@@ -2,9 +2,10 @@
 
 A comprehensive tool for RevOps teams at factorial to streamline lead qualification, context gathering, and sales enablement through automation and AI assistance.
 
-View deployed MVP here:
+View deployed MVP here: https://lead-manager-woad.vercel.app/
 
-<video src="public/lead_demo.mov" width="600" controls></video>
+Demo:
+https://github.com/user-attachments/assets/340bf4cb-41c8-463b-a067-808f02698e1c
 
 ## Project Overview
 
