@@ -58,6 +58,9 @@ export default function ContextCard({ context }: Props) {
         </div>
       )}
     </div>)}
+      {chatOpen && (
+        <ChatCard context={context} />
+      )}
     </div>
   );
 }
