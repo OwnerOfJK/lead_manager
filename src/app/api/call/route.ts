@@ -14,7 +14,7 @@ async function getTranscription(callId: string): Promise<string> {
         apiKey: process.env.OPENAI_API_KEY,
     });
 
-    const buffer = fs.readFileSync("./src/app/files/testcall.m4a");
+    const buffer = fs.readFileSync("./testcall.m4a");
     const file = new globalThis.File([buffer], "testcall.m4a", { type: "audio/m4a" });
 
     const transcription = await openai.audio.transcriptions.create({
