@@ -26,7 +26,6 @@ async function fetchNewHubspotContacts(): Promise<HubSpotProfile[]> {
   }
 
   const data = await res.json();
-  console.log("HubSpot API response:", data);
 
   if (!data.results) return [];
 
