@@ -19,17 +19,32 @@ export async function POST(req: NextRequest) {
 }
 
 /**
- * Scrapes basic profile data from a LinkedIn profile URL.
+ * Here we should practically either scrape the profile from a LinkedIn profile URL or query the LinedkIn API.
  * I took a shortcut here and used a mock implementation.
  */
 async function getLinkedInProfile(
   url: string,
 ): Promise<LinkedInProfile> {
-    console.log(`Scraping LinkedIn profile: ${url}`);
-    const contact: LinkedInProfile = {
+  let contact: LinkedInProfile;
+  if (url.includes("linkedin.com/in/brianhalligan/")) {
+    contact = {
+        name: "Brian Halligan",
+        headline: "CEO @ HubSpot | Entrepreneur | Author",
+        location: "Cambridge, Massachusetts, USA",
+    };
+  }
+  else if (url.includes("linkedin.com/in/mariajohnson/")) {
+    contact = {
+        name: "Maria Johnson",
+        headline: "Director Of Development at The Women’s Center of Jacksonville",
+        location: "Jacksonville, Florida, United States",
+    };
+  } else {
+        contact = {
         name: "John Kaller",
-        headline: "Core Contributor @ PixeLAW | User-centric Software Engineer",
+        headline: "Core Contributor @ PixeLAW | 42 Berlin | Business-Focused Software Engineer",
         location: "Barcelona, Catalonia, Spain",
     };
-    return contact;
+  }
+  return contact;
 }

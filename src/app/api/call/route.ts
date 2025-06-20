@@ -1,4 +1,3 @@
-import fs from "fs";
 import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
 
