@@ -7,7 +7,7 @@ type Props = {
     context: UserContext;
 }
 
-export default function ChatCard({ context }: Props) {
+export default function ChatCard({ context, onClose }: Props & { onClose: () => void }) {
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('');
 
@@ -27,7 +27,12 @@ export default function ChatCard({ context }: Props) {
 
   return (
     <div className="fixed bottom-4 right-4 w-[350px] h-[500px] bg-gray-400 rounded-xl shadow-xl border flex flex-col p-4 z-50">
-      <div className="font-semibold mb-2">💬 AI Assistant</div>
+      <div className='flex items-center justify-between mb-2'>
+        <h3 className="font-semibold">💬 AI Assistant</h3>
+        <button onClick={(onClose)}>
+          ❌
+        </button>
+      </div>
       <div className="flex-1 overflow-auto text-sm text-gray-700 mb-2 whitespace-pre-wrap">
         {response}
       </div>

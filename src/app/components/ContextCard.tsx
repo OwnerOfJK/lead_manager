@@ -59,7 +59,7 @@ export default function ContextCard({ context }: Props) {
       )}
     </div>)}
       {chatOpen && (
-        <ChatCard context={context} />
+        <ChatCard context={context} onClose={() => setChatOpen(false)} />
       )}
     </div>
   );
