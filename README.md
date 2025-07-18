@@ -1,6 +1,6 @@
 # Lead Manager
 
-A comprehensive tool for RevOps teams at factorial to streamline lead qualification, context gathering, and sales enablement through automation and AI assistance.
+A comprehensive tool for RevOps teams to streamline lead qualification, context gathering, and sales enablement through automation and AI assistance.
 
 View deployed MVP here: https://lead-manager-woad.vercel.app/
 
@@ -79,9 +79,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 - Integration with additional data sources
 - Team collaboration features
 
-## Alignment with RevOps Role
-
-This project demonstrates capabilities directly applicable to factorial's RevOps Engineer position:
+## Alignment with GTM
 
 - **Process Automation**: Eliminates manual data gathering across platforms
 - **Revenue-Enhancing Innovation**: Enables more informed, context-rich sales conversations
