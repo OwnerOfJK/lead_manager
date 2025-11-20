@@ -29,13 +29,36 @@ export async function POST(req: NextRequest) {
   ];
 
   try {
-    const completion = await openai.chat.completions.create({
+    const stream = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: chatMessages,
+      stream: true,
     });
 
-    const reply = completion.choices[0].message.content;
-    return NextResponse.json({ reply });
+    // Create a ReadableStream to forward OpenAI chunks to the client
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || '';
+            if (content) {
+              controller.enqueue(new TextEncoder().encode(content));
+            }
+          }
+          controller.close();
+        } catch (error) {
+          controller.error(error);
+        }
+      },
+    });
+
+    return new Response(readableStream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: 'Failed to get response' }, { status: 500 });
