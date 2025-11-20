@@ -7,7 +7,7 @@ const openai = new OpenAI({
 });
 
 export async function POST(req: NextRequest) {
-  const { context, message } = await req.json();
+  const { context, message, chatHistory = [] } = await req.json();
 
   const prompt = [
     `Name: ${context.hubspotProfile?.firstname} ${context.hubspotProfile?.lastname}`,
@@ -20,13 +20,23 @@ export async function POST(req: NextRequest) {
     context.transcription ? `Call Transcript: ${context.transcription}` : '',
   ].filter(Boolean).join('\n');
 
+  // Build messages array: system prompt + context + chat history + new message
   const chatMessages: ChatCompletionMessageParam[] = [
     { role: 'system', content: 'You are a sales manager at a company called factorial. Factorial is an all-in-one business management \
        software that tracks time and attendance, develops talent, controls finance, and streamlines payroll. \
        A single platform that lets you focus on your people, not paperwork. Use the context to answer questions and keep your response concise and brief.' },
-    { role: 'user', content: prompt },
-    { role: 'user', content: message },
+    { role: 'user', content: `Here is the context about the lead:\n${prompt}` },
   ];
+
+  // Add previous chat history if it exists
+  if (chatHistory.length > 0) {
+    chatHistory.forEach((msg: { role: 'user' | 'assistant'; content: string }) => {
+      chatMessages.push({ role: msg.role, content: msg.content });
+    });
+  }
+
+  // Add the new user message
+  chatMessages.push({ role: 'user', content: message });
 
   try {
     const stream = await openai.chat.completions.create({

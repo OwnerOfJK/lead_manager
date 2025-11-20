@@ -1,7 +1,12 @@
 'use client';
 import React from 'react'
 import { UserContext } from '@/app/types';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+
+type ChatMessage = {
+  role: 'user' | 'assistant';
+  content: string;
+};
 
 type Props = {
     context: UserContext;
@@ -9,14 +14,27 @@ type Props = {
 
 export default function ChatCard({ context, onClose }: Props & { onClose: () => void }) {
   const [message, setMessage] = useState('');
-  const [response, setResponse] = useState('');
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [currentResponse, setCurrentResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatHistory, currentResponse]);
 
   async function handleChatSubmit() {
     if (!message.trim()) return;
 
+    const userMessage = message.trim();
+    setMessage(''); // Clear input immediately
     setIsLoading(true);
-    setResponse(''); // Clear previous response
+    setCurrentResponse('');
+
+    // Add user message to chat history
+    const newUserMessage: ChatMessage = { role: 'user', content: userMessage };
+    setChatHistory(prev => [...prev, newUserMessage]);
 
     try {
       const res = await fetch('/api/chat', {
@@ -24,7 +42,7 @@ export default function ChatCard({ context, onClose }: Props & { onClose: () => 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ context, message }),
+        body: JSON.stringify({ context, message: userMessage, chatHistory }),
       });
 
       if (!res.ok) {
@@ -51,13 +69,18 @@ export default function ChatCard({ context, onClose }: Props & { onClose: () => 
         // Decode the chunk and append to response
         const chunk = decoder.decode(value, { stream: true });
         accumulatedResponse += chunk;
-        setResponse(accumulatedResponse);
+        setCurrentResponse(accumulatedResponse);
       }
 
-      setMessage(''); // Clear input after successful submission
+      // Add assistant's complete response to chat history
+      const assistantMessage: ChatMessage = { role: 'assistant', content: accumulatedResponse };
+      setChatHistory(prev => [...prev, assistantMessage]);
+      setCurrentResponse('');
     } catch (error) {
       console.error('Error streaming response:', error);
-      setResponse('Error: Failed to get response. Please try again.');
+      const errorMessage: ChatMessage = { role: 'assistant', content: 'Error: Failed to get response. Please try again.' };
+      setChatHistory(prev => [...prev, errorMessage]);
+      setCurrentResponse('');
     } finally {
       setIsLoading(false);
     }
@@ -77,8 +100,43 @@ export default function ChatCard({ context, onClose }: Props & { onClose: () => 
           ❌
         </button>
       </div>
-      <div className="flex-1 overflow-auto text-sm text-gray-700 mb-2 whitespace-pre-wrap">
-        {response || (isLoading && 'Thinking...')}
+      <div className="flex-1 overflow-auto text-sm mb-2 space-y-3 pb-2">
+        {chatHistory.length === 0 && !isLoading && (
+          <div className="text-gray-500 text-center mt-4">
+            Ask me anything about this lead!
+          </div>
+        )}
+        {chatHistory.map((msg, idx) => (
+          <div
+            key={idx}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-[80%] px-3 py-2 rounded-lg whitespace-pre-wrap ${
+                msg.role === 'user'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-600 text-white'
+              }`}
+            >
+              {msg.content}
+            </div>
+          </div>
+        ))}
+        {isLoading && currentResponse && (
+          <div className="flex justify-start">
+            <div className="max-w-[80%] px-3 py-2 rounded-lg whitespace-pre-wrap bg-gray-600 text-white">
+              {currentResponse}
+            </div>
+          </div>
+        )}
+        {isLoading && !currentResponse && (
+          <div className="flex justify-start">
+            <div className="max-w-[80%] px-3 py-2 rounded-lg bg-gray-600 text-white">
+              Thinking...
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
       </div>
       <input
         type="text"
