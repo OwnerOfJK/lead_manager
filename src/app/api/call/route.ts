@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
+import { observeOpenAI } from "@langfuse/openai";
+ 
 
 //Here we would practically use the Hubspot API to get the call recording
 async function getTranscription(callId: string): Promise<string> {
@@ -10,7 +12,8 @@ async function getTranscription(callId: string): Promise<string> {
     globalThis.File = File;
   }
 
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const openai = observeOpenAI(new OpenAI());
+  //const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   // Use fetch instead of fs.readFileSync
   const res = await fetch("https://lead-manager-woad.vercel.app/testcall.m4a");

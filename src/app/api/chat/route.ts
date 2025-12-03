@@ -1,13 +1,16 @@
 import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { observeOpenAI } from "@langfuse/openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY,
+// });
+
 
 export async function POST(req: NextRequest) {
   const { context, message, chatHistory = [] } = await req.json();
+  const openai = observeOpenAI(new OpenAI());
 
   const prompt = [
     `Name: ${context.hubspotProfile?.firstname} ${context.hubspotProfile?.lastname}`,
