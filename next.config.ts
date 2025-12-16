@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "frame-ancestors 'self' https://ownerofjk.com",
+            value: "frame-ancestors 'self' https://ownerofjk.com https://www.ownerofjk.com http://localhost:3000",
           },
         ],
       },
